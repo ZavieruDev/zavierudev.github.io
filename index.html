@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ZavieruDev — Javier Arteta</title>
+<meta name="description" content="Developer & Automation Specialist based in Cartagena, Colombia. Google Apps Script, Web Development, Bilingual ES/EN.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #080808;
+    --surface: #111111;
+    --surface2: #181818;
+    --border: #222222;
+    --accent: #c8f560;
+    --accent2: #60c8f5;
+    --text: #efefef;
+    --muted: #777;
+    --muted2: #555;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+
+  /* Noise overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    background: rgba(8,8,8,0.85);
+    border-bottom: 0.5px solid var(--border);
+  }
+
+  nav .inner {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1rem;
+    color: var(--accent);
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 500;
+    transition: color 0.2s;
+    letter-spacing: 0.03em;
+  }
+
+  .nav-links a:hover { color: var(--text); }
+
+  .lang-toggle {
+    display: flex;
+    gap: 4px;
+  }
+
+  .lang-btn {
+    background: transparent;
+    border: 0.5px solid var(--border);
+    color: var(--muted);
+    padding: 4px 10px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+  }
+
+  .lang-btn.active {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 8rem 0 4rem;
+    position: relative;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: 20%;
+    right: -10%;
+    width: 500px;
+    height: 500px;
+    background: radial-gradient(circle, rgba(200,245,96,0.06) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(200,245,96,0.08);
+    border: 0.5px solid rgba(200,245,96,0.25);
+    color: var(--accent);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 1.5rem;
+    letter-spacing: 0.04em;
+  }
+
+  .badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+  }
+
+  .hero h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3rem, 9vw, 6rem);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero h1 .name { color: var(--text); }
+  .hero h1 .brand { color: var(--accent); }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    color: var(--muted);
+    max-width: 520px;
+    line-height: 1.6;
+    margin-bottom: 2.5rem;
+    font-weight: 300;
+  }
+
+  .hero-sub span { color: var(--text); font-weight: 400; }
+
+  .hero-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #080808;
+    border: none;
+  }
+
+  .btn-primary:hover {
+    background: #d4fa6a;
+    transform: translateY(-1px);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    border: 0.5px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 5rem 0;
+    border-top: 0.5px solid var(--border);
+  }
+
+  .section-label {
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted2);
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+    font-weight: 500;
+  }
+
+  /* STATS */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1px;
+    background: var(--border);
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 4rem;
+  }
+
+  .stat {
+    background: var(--surface);
+    padding: 2rem 1.5rem;
+    text-align: center;
+  }
+
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: var(--accent);
+    line-height: 1;
+    margin-bottom: 0.5rem;
+  }
+
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.03em;
+  }
+
+  /* SKILLS */
+  .skills-wrap {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .skill {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    color: var(--muted);
+    font-size: 13px;
+    padding: 7px 16px;
+    border-radius: 20px;
+    transition: all 0.2s;
+  }
+
+  .skill:hover {
+    border-color: var(--muted2);
+    color: var(--text);
+  }
+
+  .skill.primary {
+    background: rgba(96,200,245,0.06);
+    border-color: rgba(96,200,245,0.2);
+    color: var(--accent2);
+  }
+
+  /* PROJECTS */
+  .projects-grid {
+    display: grid;
+    gap: 1px;
+    background: var(--border);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+
+  .project {
+    background: var(--surface);
+    padding: 2rem;
+    transition: background 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+
+  .project:hover { background: var(--surface2); }
+
+  .project-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .project-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  .project-status {
+    font-size: 11px;
+    background: rgba(200,245,96,0.08);
+    border: 0.5px solid rgba(200,245,96,0.2);
+    color: var(--accent);
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .project-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.65;
+    margin-bottom: 1rem;
+  }
+
+  .project-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .tag {
+    font-size: 11px;
+    background: var(--surface2);
+    color: var(--muted2);
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 0.5px solid var(--border);
+  }
+
+  /* ABOUT */
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+  }
+
+  .about-text {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.8;
+  }
+
+  .about-text p + p { margin-top: 1rem; }
+
+  .about-details {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .detail-row {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 1rem;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .detail-label {
+    font-size: 11px;
+    color: var(--muted2);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .detail-value {
+    font-size: 14px;
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  /* CONTACT */
+  .contact-box {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 16px;
+    padding: 3rem;
+    text-align: center;
+  }
+
+  .contact-box h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    font-weight: 800;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+
+  .contact-box p {
+    color: var(--muted);
+    margin-bottom: 2rem;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .contact-links {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 2rem 0;
+    border-top: 0.5px solid var(--border);
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted2);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-up {
+    animation: fadeUp 0.6s ease forwards;
+  }
+
+  .fade-up:nth-child(1) { animation-delay: 0.1s; }
+  .fade-up:nth-child(2) { animation-delay: 0.2s; }
+  .fade-up:nth-child(3) { animation-delay: 0.3s; }
+  .fade-up:nth-child(4) { animation-delay: 0.4s; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .about-grid { grid-template-columns: 1fr; }
+    .nav-links { display: none; }
+    .contact-box { padding: 2rem 1.5rem; }
+  }
+
+  [data-lang] { transition: opacity 0.15s; }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <a href="#" class="nav-logo">ZavieruDev</a>
+    <ul class="nav-links">
+      <li><a href="#projects" data-lang="en">Projects</a><a href="#projects" data-lang="es" style="display:none">Proyectos</a></li>
+      <li><a href="#about" data-lang="en">About</a><a href="#about" data-lang="es" style="display:none">Sobre mí</a></li>
+      <li><a href="#contact" data-lang="en">Contact</a><a href="#contact" data-lang="es" style="display:none">Contacto</a></li>
+    </ul>
+    <div class="lang-toggle">
+      <button class="lang-btn active" onclick="setLang('en')" id="btn-en">EN</button>
+      <button class="lang-btn" onclick="setLang('es')" id="btn-es">ES</button>
+    </div>
+  </div>
+</nav>
+
+<main>
+  <div class="container">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-glow"></div>
+      <div class="fade-up">
+        <div class="badge" data-lang="en">Available for remote work</div>
+        <div class="badge" data-lang="es" style="display:none">Disponible para trabajo remoto</div>
+      </div>
+      <h1 class="fade-up">
+        <span class="name">Javier<br></span>
+        <span class="brand">Arteta.</span>
+      </h1>
+      <p class="hero-sub fade-up" data-lang="en">
+        Developer & automation specialist.<br>
+        I build <span>real systems</span> for real clients —<br>
+        from web apps to document automation.
+      </p>
+      <p class="hero-sub fade-up" data-lang="es" style="display:none">
+        Desarrollador y especialista en automatización.<br>
+        Construyo <span>sistemas reales</span> para clientes reales —<br>
+        desde apps web hasta automatización de documentos.
+      </p>
+      <div class="hero-actions fade-up">
+        <a href="#contact" class="btn btn-primary" data-lang="en">Get in touch</a>
+        <a href="#contact" class="btn btn-primary" data-lang="es" style="display:none">Contáctame</a>
+        <a href="#projects" class="btn btn-ghost" data-lang="en">See my work</a>
+        <a href="#projects" class="btn btn-ghost" data-lang="es" style="display:none">Ver proyectos</a>
+      </div>
+    </div>
+
+    <!-- STATS -->
+    <div class="stats-grid">
+      <div class="stat">
+        <div class="stat-num">3+</div>
+        <div class="stat-label" data-lang="en">Real clients</div>
+        <div class="stat-label" data-lang="es" style="display:none">Clientes reales</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">5+</div>
+        <div class="stat-label" data-lang="en">Systems built</div>
+        <div class="stat-label" data-lang="es" style="display:none">Sistemas construidos</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">2</div>
+        <div class="stat-label" data-lang="en">Languages</div>
+        <div class="stat-label" data-lang="es" style="display:none">Idiomas</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">100%</div>
+        <div class="stat-label" data-lang="en">Remote-ready</div>
+        <div class="stat-label" data-lang="es" style="display:none">Listo para remoto</div>
+      </div>
+    </div>
+
+    <!-- PROJECTS -->
+    <section id="projects">
+      <div class="section-label" data-lang="en">Selected work</div>
+      <div class="section-label" data-lang="es" style="display:none">Trabajo seleccionado</div>
+
+      <div class="projects-grid">
+
+        <a href="https://verdezacondominiodecampo.com" target="_blank" class="project">
+          <div class="project-top">
+            <div class="project-name">Verdeza — Corporate Website</div>
+            <span class="project-status" data-lang="en">Live ↗</span>
+            <span class="project-status" data-lang="es" style="display:none">En vivo ↗</span>
+          </div>
+          <p class="project-desc" data-lang="en">Full corporate website built from scratch for a real estate project in Turbaco, Bolívar. Deployed on GitHub Pages with custom GoDaddy domain, Formspree contact form, Google Maps embed, and floating WhatsApp button.</p>
+          <p class="project-desc" data-lang="es" style="display:none">Sitio web corporativo construido desde cero para un proyecto inmobiliario en Turbaco, Bolívar. Desplegado en GitHub Pages con dominio propio en GoDaddy, formulario Formspree, mapa integrado y botón flotante de WhatsApp.</p>
+          <div class="project-tags">
+            <span class="tag">HTML</span><span class="tag">CSS</span><span class="tag">JavaScript</span><span class="tag">GitHub Pages</span><span class="tag">GoDaddy</span><span class="tag">Formspree</span>
+          </div>
+        </a>
+
+        <div class="project">
+          <div class="project-top">
+            <div class="project-name">Verdeza — Document Automation</div>
+            <span class="project-status" data-lang="en">Production</span>
+            <span class="project-status" data-lang="es" style="display:none">En uso</span>
+          </div>
+          <p class="project-desc" data-lang="en">Automated generation of purchase promise contracts and intention documents using Google Forms, Sheets, Drive, and Docs. Multi-template system based on buyer profile and payment plan type. Includes monetary values in Spanish words and dynamic payment tables.</p>
+          <p class="project-desc" data-lang="es" style="display:none">Generación automatizada de promesas de compraventa e intenciones de compra con Google Forms, Sheets, Drive y Docs. Sistema multitemplates según perfil del comprador y tipo de plan de pago. Incluye valores en letras y tablas de pago dinámicas.</p>
+          <div class="project-tags">
+            <span class="tag">Google Apps Script</span><span class="tag">Google Forms</span><span class="tag">Google Sheets</span><span class="tag">Google Docs</span><span class="tag">Drive API</span>
+          </div>
+        </div>
+
+        <div class="project">
+          <div class="project-top">
+            <div class="project-name">Verdeza — Payment Tracking System</div>
+            <span class="project-status" data-lang="en">Production</span>
+            <span class="project-status" data-lang="es" style="display:none">En uso</span>
+          </div>
+          <p class="project-desc" data-lang="en">Spreadsheet-based payment tracking system with 3 linked Google Forms feeding a master tracking sheet with 63 payment columns per client. Enables real-time payment recording and client status visibility for the sales team.</p>
+          <p class="project-desc" data-lang="es" style="display:none">Sistema de seguimiento de pagos con 3 formularios enlazados que alimentan una hoja maestra con 63 columnas de pago por cliente. Permite registrar pagos en tiempo real y ver el estado de cada cliente para el equipo comercial.</p>
+          <div class="project-tags">
+            <span class="tag">Google Sheets</span><span class="tag">Google Forms</span><span class="tag">Apps Script</span>
+          </div>
+        </div>
+
+        <div class="project">
+          <div class="project-top">
+            <div class="project-name">Lending App — System Design & Estimate</div>
+            <span class="project-status" data-lang="en">Freelance</span>
+            <span class="project-status" data-lang="es" style="display:none">Freelance</span>
+          </div>
+          <p class="project-desc" data-lang="en">Scoped and priced a two-app Android system for a lending and collections client. Delivered full technical proposal including architecture, timelines, and cost breakdown for collector-facing and admin dashboard apps.</p>
+          <p class="project-desc" data-lang="es" style="display:none">Alcance y cotización de un sistema Android de dos apps para un cliente de préstamos y cobros. Propuesta técnica completa con arquitectura, tiempos y desglose de costos para la app del cobrador y el panel de administración.</p>
+          <div class="project-tags">
+            <span class="tag">Android</span><span class="tag">System Design</span><span class="tag">Technical Proposal</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SKILLS -->
+    <section>
+      <div class="section-label" data-lang="en">Skills</div>
+      <div class="section-label" data-lang="es" style="display:none">Habilidades</div>
+      <div class="skills-wrap">
+        <span class="skill primary">Google Apps Script</span>
+        <span class="skill primary">JavaScript</span>
+        <span class="skill primary">HTML & CSS</span>
+        <span class="skill primary">Google Workspace APIs</span>
+        <span class="skill">Git & GitHub</span>
+        <span class="skill">GitHub Pages</span>
+        <span class="skill" data-lang="en">Document Automation</span>
+        <span class="skill" data-lang="es" style="display:none">Automatización documental</span>
+        <span class="skill" data-lang="en">Web Deployment</span>
+        <span class="skill" data-lang="es" style="display:none">Despliegue web</span>
+        <span class="skill">GoDaddy DNS</span>
+        <span class="skill">Formspree</span>
+        <span class="skill" data-lang="en">Python (learning)</span>
+        <span class="skill" data-lang="es" style="display:none">Python (aprendiendo)</span>
+        <span class="skill" data-lang="en">SQL (learning)</span>
+        <span class="skill" data-lang="es" style="display:none">SQL (aprendiendo)</span>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section id="about">
+      <div class="section-label" data-lang="en">About me</div>
+      <div class="section-label" data-lang="es" style="display:none">Sobre mí</div>
+      <div class="about-grid">
+        <div class="about-text">
+          <p data-lang="en">Self-taught developer based in Cartagena, Colombia. I learn by building real things for real clients. I specialize in Google Apps Script automation and web development, delivering solutions that actually save time and solve problems.</p>
+          <p data-lang="en">Currently studying Software Analysis & Development at SENA while growing my freelance brand ZavieruDev. I work fluently in English and Spanish and I'm always looking for projects where I can make a real impact.</p>
+          <p data-lang="es" style="display:none">Desarrollador autodidacta con base en Cartagena, Colombia. Aprendo construyendo cosas reales para clientes reales. Me especializo en automatización con Google Apps Script y desarrollo web, entregando soluciones que realmente ahorran tiempo.</p>
+          <p data-lang="es" style="display:none">Actualmente estudio Análisis y Desarrollo de Software en el SENA mientras hago crecer mi marca freelance ZavieruDev. Trabajo en inglés y español, y siempre busco proyectos donde pueda generar un impacto real.</p>
+        </div>
+        <div class="about-details">
+          <div class="detail-row">
+            <span class="detail-label" data-lang="en">Based in</span>
+            <span class="detail-label" data-lang="es" style="display:none">Ubicación</span>
+            <span class="detail-value">Cartagena, Colombia 🇨🇴</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" data-lang="en">Languages</span>
+            <span class="detail-label" data-lang="es" style="display:none">Idiomas</span>
+            <span class="detail-value" data-lang="en">Spanish (native) · English (professional)</span>
+            <span class="detail-value" data-lang="es" style="display:none">Español (nativo) · Inglés (profesional)</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" data-lang="en">Currently studying</span>
+            <span class="detail-label" data-lang="es" style="display:none">Estudiando</span>
+            <span class="detail-value" data-lang="en">Software Analysis & Dev — SENA (2025–2027)</span>
+            <span class="detail-value" data-lang="es" style="display:none">Análisis y Desarrollo de Software — SENA (2025–2027)</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label" data-lang="en">Open to</span>
+            <span class="detail-label" data-lang="es" style="display:none">Disponible para</span>
+            <span class="detail-value" data-lang="en">Remote work · Freelance projects</span>
+            <span class="detail-value" data-lang="es" style="display:none">Trabajo remoto · Proyectos freelance</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <div class="contact-box">
+        <h2 data-lang="en">Let's work together.</h2>
+        <h2 data-lang="es" style="display:none">Trabajemos juntos.</h2>
+        <p data-lang="en">Have a project in mind? I'm open to remote work and freelance opportunities. Let's talk.</p>
+        <p data-lang="es" style="display:none">¿Tienes un proyecto en mente? Estoy abierto a trabajo remoto y oportunidades freelance. Hablemos.</p>
+        <div class="contact-links">
+          <a href="mailto:zavierudev@gmail.com" class="btn btn-primary">zavierudev@gmail.com</a>
+          <a href="https://github.com/zavierudev" target="_blank" class="btn btn-ghost">GitHub</a>
+          <a href="https://linkedin.com/in/javierarteta" target="_blank" class="btn btn-ghost">LinkedIn</a>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    ZavieruDev &copy; 2025 &mdash; Javier Arteta &mdash; Cartagena, Colombia
+  </div>
+</footer>
+
+<script>
+  function setLang(lang) {
+    document.querySelectorAll('[data-lang]').forEach(el => {
+      el.style.display = el.dataset.lang === lang ? '' : 'none';
+    });
+    document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+    document.getElementById('btn-es').classList.toggle('active', lang === 'es');
+  }
+</script>
+
+</body>
+</html>
